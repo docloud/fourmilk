@@ -1,5 +1,10 @@
+# Runtime
 flask
-flask-restful
+webargs
+pymongo
+PyYaml
+
+# Develop
 pytest
 sphinx
 ipython
