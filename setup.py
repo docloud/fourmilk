@@ -2,8 +2,6 @@
 
 from setuptools import setup, find_packages
 
-entry_points = [
-]
 
 setup(
     name='fourmilk',
@@ -12,6 +10,10 @@ setup(
     url='http://github.com/docloud/fourmilk',
     include_package_data=True,
     packages=find_packages(),
-    entry_points={"console_scripts": entry_points},
+    entry_points={
+        "console_scripts": [
+            'fourmilk=fourmilk.shell:cli'
+        ]
+    },
     install_requires=open('requirements.txt').readlines(),
 )

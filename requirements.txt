@@ -3,8 +3,11 @@ flask
 webargs
 pymongo
 PyYaml
+jsonpickle
 
 # Develop
+click
 pytest
 sphinx
 ipython
+codecov

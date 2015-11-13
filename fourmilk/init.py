@@ -1,8 +1,9 @@
 # coding=utf8
 
+import inspect
 from . import app, config
 from .api import __all__
-import inspect
+from .decorators import jsonify
 from flask.views import MethodView
 
 
@@ -13,20 +14,39 @@ def init_app():
     for api in __all__:
         ins = api()
 
+        # 合并默认装饰器列表
+        default_decorators = [
+            jsonify
+        ]
+        ins.decorators.extend(default_decorators)
+        ins.decorators = list(set(ins.decorators))
+
         # 获取所有额外的方法
         methods = inspect.getmembers(api)
         for key, method in methods:
-            if key.startswith('__') or key in exclude:
+            if key.startswith('__') or key in exclude or not inspect.ismethod(method):
                 continue
+
+            # 给所有额外方法绑定装饰器
+
+            ins_method = getattr(ins, key)
+            for decorator in ins.decorators:
+                ins_method = decorator(ins_method)
+
+            options = getattr(ins_method, "options", {})
+            rule = getattr(ins_method, "rule", key)
 
             # 将MethodView中额外的方法绑定到APP的路由上
             # 绑定规则是
             # MethodView的路由后接方法名
             app.add_url_rule(
-                '/'.join([api.route, key]),
-                view_func=getattr(ins, key)
+                '/'.join([api.route, rule]),
+                view_func=ins_method,
+                **options
             )
-        app.add_url_rule(api.route, view_func=api.as_view(api.__class__.__name__))
+        app.add_url_rule(api.route, view_func=api.as_view(api.__name__))
+
+
 
 
 def run_app():
