@@ -10,6 +10,8 @@ click
 sphinx
 ipython
 
+# Test
 pytest
+requests
 pytest-cov
 codecov

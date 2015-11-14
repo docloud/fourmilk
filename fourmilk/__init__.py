@@ -11,9 +11,14 @@ try:
     config = yaml.load(open("app.yaml"))
 except IOError:
     app.logger.info("Could not load environment config, use default.")
-    config = {}
+    config = {
+        "app": {
+            "host": "127.0.0.1",
+            "port": 3000,
+        }
+    }
 
-app.config.update(config)
+app.config.update({k.upper():v for k, v in config["app"].iteritems()})
 
 if 'logging' in config:
     logging.config.dictConfig(config['logging'])
