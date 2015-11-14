@@ -1,5 +1,13 @@
 # coding=utf8
 
+from . import http
 
-def test_pass():
+user = {
+    "username": "test",
+    "password": "1234",
+}
+
+
+def test_register():
+    # http.post('user/register', json=user)
     pass

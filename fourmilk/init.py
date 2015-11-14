@@ -4,9 +4,10 @@ import inspect
 from . import app, config, logger
 from .api import __all__
 from .decorators import jsonify
+from .exceptions import Error
 from flask import jsonify as flask_jsonify
 from flask.views import MethodView
-
+from webargs.flaskparser import parser
 
 def init_app():
     app.config.update(config['app'])
@@ -57,6 +58,10 @@ def init_app():
             message=e.message,
             code=getattr(e, 'error_code', 0)
         )), 500
+
+    @parser.error_handler
+    def argerror_handler(e):
+        raise Error(Error.ARGUMENT_ERROR, e.message)
 
 
 def run_app():
