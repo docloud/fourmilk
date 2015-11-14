@@ -1,13 +1,15 @@
 # coding=utf8
 
 import inspect
-from . import app, config
+from . import app, config, logger
 from .api import __all__
 from .decorators import jsonify
+from flask import jsonify as flask_jsonify
 from flask.views import MethodView
 
 
 def init_app():
+    app.config.update(config['app'])
     exclude = [pair[0] for pair in inspect.getmembers(MethodView)]
     exclude.extend(['get', 'post', 'put', 'delete', 'options', 'head', 'route'])
 
@@ -24,15 +26,15 @@ def init_app():
         # 获取所有额外的方法
         methods = inspect.getmembers(api)
         for key, method in methods:
-            if key.startswith('__') or key in exclude or not inspect.ismethod(method):
+            if key.startswith('_') or key in exclude or not inspect.ismethod(method):
                 continue
 
             # 给所有额外方法绑定装饰器
-
             ins_method = getattr(ins, key)
             for decorator in ins.decorators:
                 ins_method = decorator(ins_method)
 
+            # 获取 decorator.router 绑定到MethodView额外方法的选项
             options = getattr(ins_method, "options", {})
             rule = getattr(ins_method, "rule", key)
 
@@ -47,6 +49,14 @@ def init_app():
         app.add_url_rule(api.route, view_func=api.as_view(api.__name__))
 
 
+    @app.errorhandler(Exception)
+    def exception_handler(e):
+        logger.exception(e)
+        return flask_jsonify(dict(
+            exception=e.__class__.__name__,
+            message=e.message,
+            code=getattr(e, 'error_code', 0)
+        )), 500
 
 
 def run_app():
@@ -54,7 +64,8 @@ def run_app():
     from pprint import pprint
 
     pprint(app.url_map)
-    app.run(host=config.get('host') or '127.0.0.1', port=config.get('port') or 3000)
+    app.run(host=app.config.get('host') or '127.0.0.1',
+            port=app.config.get('port') or 3000)
 
 
 if __name__ == '__main__':

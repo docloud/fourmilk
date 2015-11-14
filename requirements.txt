@@ -7,7 +7,9 @@ jsonpickle
 
 # Develop
 click
-pytest
 sphinx
 ipython
+
+pytest
+pytest-cov
 codecov

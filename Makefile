@@ -15,7 +15,7 @@ test:
 	py.test -s -v
 
 coverage:
-	py.test -s -v --cov=${SOURCE} --cov-report=html
+	py.test -s -v --cov=fourmilk --cov-report=html
 
 document:
 	make -C docs html
