@@ -3,7 +3,7 @@
 import inspect
 from . import app, config, logger
 from .api import __all__
-from .decorators import jsonify, crossdomain
+from .decorators import jsonify
 from .exceptions import Error
 from flask import jsonify as flask_jsonify
 from flask.views import MethodView
@@ -19,8 +19,7 @@ def init_app():
 
         # 合并默认装饰器列表
         default_decorators = [
-            jsonify,
-            crossdomain(origin="*")
+            jsonify
         ]
         ins.decorators.extend(default_decorators)
         ins.decorators = list(set(ins.decorators))
@@ -63,6 +62,15 @@ def init_app():
     @parser.error_handler
     def argerror_handler(e):
         raise Error(Error.ARGUMENT_ERROR, e.message)
+
+    @app.after_request
+    def crossdomain(response):
+        h = response.headers
+
+        h['Access-Control-Allow-Origin'] = "*"
+        h['Access-Control-Allow-Methods'] = "HEAD, GET, POST, PUT, DELETE, OPTIONS"
+        h['Access-Control-Max-Age'] = 21600
+        return response
 
 
 def run_app():
