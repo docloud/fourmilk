@@ -92,7 +92,8 @@ class UserView(MethodView):
         "username": fields.Str(required=True),
         "password": fields.Str(required=True)
     }
-    register_args = login_args
+    register_args = login_args.copy()
+    register_args.update(role=fields.Int(missing=2))
 
     def _login(self, args):
         user = mongo.user.find_one(args)
