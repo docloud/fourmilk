@@ -3,7 +3,7 @@
 import inspect
 from . import app, config, logger
 from .api import __all__
-from .decorators import jsonify
+from .decorators import jsonify, crossdomain
 from .exceptions import Error
 from flask import jsonify as flask_jsonify
 from flask.views import MethodView
@@ -19,7 +19,8 @@ def init_app():
 
         # 合并默认装饰器列表
         default_decorators = [
-            jsonify
+            jsonify,
+            crossdomain(origin="*")
         ]
         ins.decorators.extend(default_decorators)
         ins.decorators = list(set(ins.decorators))
