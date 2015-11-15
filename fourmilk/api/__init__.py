@@ -101,7 +101,7 @@ class UserView(MethodView):
             user['id'] = str(user.pop('_id'))
             resp = make_response(jsonify(user))
             for k, v in user.iteritems():
-                resp.set_cookie(k, v)
+                resp.set_cookie(k, str(v))
             return resp
         else:
             raise Error(Error.USER_NOT_EXIST)
