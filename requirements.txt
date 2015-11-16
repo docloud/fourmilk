@@ -4,11 +4,13 @@ webargs
 pymongo
 PyYaml
 jsonpickle
+gunicorn
 
 # Develop
 click
 sphinx
 ipython
+fabric
 
 # Test
 pytest
